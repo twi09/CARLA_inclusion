@@ -60,7 +60,7 @@ pip install carla-recourse
 ```
 
 ### Select a VCNet model 
-Two versions of VCNet can be selected 
+Two versions of VCNet can be selected: 
 * The original version of the arcticle (immutable=False)
 * A specific version that handle immutable features (immutable=True)
 ```python
@@ -68,7 +68,11 @@ from carla.self_explaining_model import VCNet
 ml_model = VCNet(data_catalog,hyperparams,immutable_features,immutable=False)
 ```
 
-## Run benchmark with VCNet 
+### Hyperparameters and models 
+The hyperparameters values for each dataset are provided in [hyperparameters_original_version](github.com/CARLA_inclusion/self_explaining_model/catalog/vcnet/library/vcnet_tabular_data_v0/hyperparameters) and [hyperparameters_immutable_version](github.com/CARLA_inclusion/self_explaining_model/catalog/vcnet/library/vcnet_tabular_data_v1/hyperparameters) respectively for the original and specific version respectively.
+
+
+## Run benchmark with VCNet kuplift
 
 
 ```python
