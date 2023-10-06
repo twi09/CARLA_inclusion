@@ -1,9 +1,16 @@
-# VCnet: A self-explaining model for realistic counterfactual generation - Implementation in the CARLA library
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/carla-recourse?style=for-the-badge)](https://pypi.org/project/carla-recourse/) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/carla-recourse/CARLA/CI?style=for-the-badge) [![Read the Docs](https://img.shields.io/readthedocs/carla-counterfactual-and-recourse-library?style=for-the-badge)](https://carla-counterfactual-and-recourse-library.readthedocs.io/en/latest/?badge=latest) ![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge)
 
+# CARLA - Counterfactual And Recourse Library
 
-This repository proposed the inclusion of VCnet into the CARLA framework.
+<img align="right" width="240" height="200" src="https://github.com/carla-recourse/CARLA/blob/main/images/carla_logo_square.png?raw=true">
 
 CARLA is a python library to benchmark counterfactual explanation and recourse models. It comes out-of-the box with commonly used datasets and various machine learning models. Designed with extensibility in mind: Easily include your own counterfactual methods, new machine learning models or other datasets. Find extensive documentation [here](https://carla-counterfactual-and-recourse-library.readthedocs.io/en/latest/)! Our arXiv paper can be found [here](https://arxiv.org/pdf/2108.00783.pdf).
+
+**What is algorithmic recourse?** As machine learning (ML) models are increasingly being deployed in high-stakes applications, there has been growing interest in providing recourse to individuals adversely impacted by model predictions (e.g., below we depict the canonical recourse example for an applicant whose loan has been denied). This library provides a starting point for researchers and practitioners alike, who wish to understand the inner workings of various counterfactual explanation and recourse methods and their underlying assumptions that went into the design of these methods.
+
+
+
+![motivating example](https://github.com/carla-recourse/CARLA/blob/main/images/motivating_cartoon.png?raw=true)
 
 
 
@@ -69,77 +76,28 @@ It is planned to make all recourse methods available for all ML frameworks . The
 pip install carla-recourse
 ```
 
-## Run benchmark with VCnet 
+## Quickstart
 
 
 ```python
-from carla.models.negative_instances import predict_negative_instances
-from carla.data.catalog import OnlineCatalog
-from carla import MLModelCatalog
-from carla import Benchmark
-from carla.self_explaining_model.catalog.vcnet.library.utils import *
-from carla.self_explaining_model import VCNet
-from carla.self_explaining_model.catalog.vcnet.library.utils import fix_seed
-from carla.recourse_methods import Face
-from carla.evaluation.catalog import Distance, Redundancy, SuccessRate, AvgTime, ConstraintViolation, YNN 
-import os 
+from carla import OnlineCatalog, MLModelCatalog
+from carla.recourse_methods import GrowingSpheres
 
+# load a catalog dataset
+data_name = "adult"
+dataset = OnlineCatalog(data_name)
 
-# Load a dataset from the carla framework 
-name = "adult"
-data_catalog = OnlineCatalog(name,encoding_method="OneHot_drop_binary")
+# load artificial neural network from catalog
+model = MLModelCatalog(dataset, "ann")
 
+# get factuals from the data to generate counterfactual examples
+factuals = dataset.raw.iloc[:10]
 
-# Immutable features 
-immutable_features = data_catalog.immutables
+# load a recourse model and pass black box model
+gs = GrowingSpheres(model)
 
-# Fix the seed
-fix_seed()
-# Define hyperparams for counterfactual search : 
-hyperparams = {   
-    "name" : name ,
-    "vcnet_params" : {
-    "train" : False,
-    "lr":  1.14e-5,
-    "batch_size": 91,
-    "epochs" : 174,
-    "lambda_1": 0,
-    "lambda_2": 0.93,
-    "lambda_3": 1,
-    "latent_size" : 19,
-    "latent_size_share" :  304, 
-    "mid_reduce_size" : 152,
-    "kld_start_epoch" : 0.112,
-    "max_lambda_1" : 0.034
-    }
-}
-
-# Instantiate a Vcnet model 
-ml_model = VCNet(data_catalog,hyperparams,immutable_features,immutable=False)
-
-# Test instances that are predicted class 0
-factuals_drop = predict_negative_instances(ml_model, data_catalog.df_test.drop(columns=[data_catalog.target])).iloc[:100].reset_index(drop=True)
-
-
-# Benchmark Vcnet 
-benchmark = Benchmark(ml_model,ml_model,factuals_drop)
-
-# Load metrics from carla 
-distances = Distance(ml_model)
-success_rate = SuccessRate()
-constraint_violation = ConstraintViolation(ml_model)
-ynn = YNN(ml_model,{"y" : 5, "cf_label" : 1})
-
-# Run the benchmark 
-results = benchmark.run_benchmark([success_rate,distances,constraint_violation,ynn])
-
-# Save the results 
-outname = f'results_VCNet.csv'
-outdir = f'./carla_results/vcnet/{data_catalog.name}'
-if not os.path.exists(outdir):
-    os.makedirs(outdir)
-fullname = os.path.join(outdir, outname)
-results.to_csv(fullname)
+# generate counterfactual examples
+counterfactuals = gs.get_counterfactuals(factuals)
 ```
 
 
@@ -180,26 +138,33 @@ pip install -r requirements-dev.txt
 python -m pytest test/*
 ```
 
+### Linting and Styling
+
+We use pre-commit hooks within our build pipelines to enforce:
+
+- Python linting with [flake8](https://flake8.pycqa.org/en/latest/).
+- Python styling with [black](https://github.com/psf/black).
+
+Install pre-commit with:
+
+```sh
+make install-dev
+```
+
+Using python directly or within activated virtual environment:
+
+```sh
+pip install -r requirements-dev.txt
+pre-commit install
+```
 
 ## Licence
 
-VCnet is under the MIT Licence. See the [LICENCE](github.com/indyfree/carla/blob/master/LICENSE) for more details.
+carla is under the MIT Licence. See the [LICENCE](github.com/indyfree/carla/blob/master/LICENSE) for more details.
 
 ## Citation
 
-VCnet came from a paper accepted to ECML/PKDD 2022.
-If you conduct comparison with it, please cite : 
-```sh
-@inproceedings{Guyomard2022VCNetAS,
-  title={{VCNet}: A self-explaining model for realistic counterfactual generation},
-  author={Victor Guyomard and Françoise Fessant and Thomas Guyet},
-  booktitle={Proceedings of the European Conference on Machine Learning and Principles and Practice of Knowledge Discovery in Databases (ECML/PKDD)},
-  pages={437--453},
-  location={Grenoble, Fr},
-  year={2022}
-}
-```
-The CARLA framwork that is used for implementation, came from a project accepted to NeurIPS 2021 (Benchmark & Data Sets Track).
+This project was recently accepted to NeurIPS 2021 (Benchmark & Data Sets Track).
 If you use this codebase, please cite:
 
 ```sh
@@ -212,3 +177,5 @@ If you use this codebase, please cite:
       primaryClass={cs.LG}
 }
 ```
+
+Please also cite the original authors' work.
