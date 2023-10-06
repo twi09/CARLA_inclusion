@@ -59,6 +59,15 @@ It is planned to make all recourse methods available for all ML frameworks . The
 pip install carla-recourse
 ```
 
+### Select a VCNet model 
+Two versions of VCNet can be selected 
+* The original version of the arcticle (immutable=False)
+* A specific version that handle immutable features (immutable=True)
+```python
+from carla.self_explaining_model import VCNet
+ml_model = VCNet(data_catalog,hyperparams,immutable_features,immutable=False)
+```
+
 ## Run benchmark with VCNet 
 
 
