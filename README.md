@@ -1,9 +1,9 @@
 # VCNet: A self-explaining model for realistic counterfactual generation - Implementation in the CARLA library
 
 
-This repository proposed the inclusion of VCNet into the CARLA framework. 
-The paper can be found here [here](https://link.springer.com/chapter/10.1007/978-3-031-26387-3_27).
-Our method is implemented in the CARLA framework to conduct comparisons with other counterfactual methods. 
+This repository proposed the inclusion of VCNet into the CARLA framework.   
+The paper can be found here [here](https://link.springer.com/chapter/10.1007/978-3-031-26387-3_27).  
+Our method is implemented in the CARLA framework to conduct comparisons with other counterfactual methods.   
 
 CARLA is a python library to benchmark counterfactual explanation and recourse models. It comes out-of-the box with commonly used datasets and various machine learning models. Designed with extensibility in mind: Easily include your own counterfactual methods, new machine learning models or other datasets. Find extensive documentation [here](https://carla-counterfactual-and-recourse-library.readthedocs.io/en/latest/)! The arXiv paper can be found [here](https://arxiv.org/pdf/2108.00783.pdf).
 
