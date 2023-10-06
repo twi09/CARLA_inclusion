@@ -1,7 +1,7 @@
-# VCnet: A self-explaining model for realistic counterfactual generation - Implementation in the CARLA library
+# VCNet: A self-explaining model for realistic counterfactual generation - Implementation in the CARLA library
 
 
-This repository proposed the inclusion of VCnet into the CARLA framework.
+This repository proposed the inclusion of VCNet into the CARLA framework.
 
 CARLA is a python library to benchmark counterfactual explanation and recourse models. It comes out-of-the box with commonly used datasets and various machine learning models. Designed with extensibility in mind: Easily include your own counterfactual methods, new machine learning models or other datasets. Find extensive documentation [here](https://carla-counterfactual-and-recourse-library.readthedocs.io/en/latest/)! The arXiv paper can be found [here](https://arxiv.org/pdf/2108.00783.pdf).
 
@@ -43,7 +43,7 @@ It is planned to make all recourse methods available for all ML frameworks . The
 | Growing Spheres (GS)                                       | [Source](https://arxiv.org/pdf/1712.08443.pdf)                   |     X      |    X    |         |         |
 | Revise                                                     | [Source](https://arxiv.org/pdf/1907.09615.pdf)                   |            |    X    |         |         |
 | Wachter                                                    | [Source](https://arxiv.org/ftp/arxiv/papers/1711/1711.00399.pdf) |            |    X    |         |         |
-| VCnet                                                      | [Source](https://arxiv.org/abs/2212.10847)                       |            |    X    |         |         |
+| VCNet                                                      | [Source](https://arxiv.org/abs/2212.10847)                       |            |    X    |         |         |
 ## Installation
 
 ### Requirements
@@ -57,7 +57,7 @@ It is planned to make all recourse methods available for all ML frameworks . The
 pip install carla-recourse
 ```
 
-## Run benchmark with VCnet 
+## Run benchmark with VCNet 
 
 
 ```python
@@ -102,14 +102,14 @@ hyperparams = {
     }
 }
 
-# Instantiate a Vcnet model 
+# Instantiate a VCNet model 
 ml_model = VCNet(data_catalog,hyperparams,immutable_features,immutable=False)
 
 # Test instances that are predicted class 0
 factuals_drop = predict_negative_instances(ml_model, data_catalog.df_test.drop(columns=[data_catalog.target])).iloc[:100].reset_index(drop=True)
 
 
-# Benchmark Vcnet 
+# Benchmark VCNet 
 benchmark = Benchmark(ml_model,ml_model,factuals_drop)
 
 # Load metrics from carla 
@@ -171,11 +171,11 @@ python -m pytest test/*
 
 ## Licence
 
-VCnet is under the MIT Licence. See the [LICENCE](github.com/indyfree/carla/blob/master/LICENSE) for more details.
+VCNet is under the MIT Licence. See the [LICENCE](github.com/indyfree/carla/blob/master/LICENSE) for more details.
 
 ## Citation
 
-VCnet came from a paper accepted to ECML/PKDD 2022.
+VCNet came from a paper accepted to ECML/PKDD 2022.
 If you conduct comparison with it, please cite : 
 ```sh
 @inproceedings{Guyomard2022VCNetAS,
