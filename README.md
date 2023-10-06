@@ -69,7 +69,7 @@ ml_model = VCNet(data_catalog,hyperparams,immutable_features,immutable=False)
 ```
 
 ### Hyperparameters and models 
-The hyperparameters values for each dataset are provided in [hyperparameters_original_version](github.com/CARLA_inclusion/self_explaining_model/catalog/vcnet/library/vcnet_tabular_data_v0/hyperparameters) and [hyperparameters_immutable_version](github.com/CARLA_inclusion/self_explaining_model/catalog/vcnet/library/vcnet_tabular_data_v1/hyperparameters) respectively for the original and specific version respectively.
+The hyperparameters values for each dataset are provided in [hyperparameters_original_version](carla/self_explaining_model/catalog/vcnet/library/vcnet_tabular_data_v0/hyperparameters) and [hyperparameters_immutable_version](carla/self_explaining_model/catalog/vcnet/library/vcnet_tabular_data_v1/hyperparameters) respectively for the original and specific version respectively.
 
 
 ## Run benchmark with VCNet kuplift
