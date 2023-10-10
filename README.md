@@ -1,9 +1,9 @@
-# VCNet: A self-explaining model for realistic counterfactual generation - Implementation in the CARLA library
+# VCNet and CROCO - Implementation in the CARLA framework
 
+This repository proposed the inclusion of VCNet: Variational Counter Net, and CROCO: Cost-efficient RObust COunterfactuals into the CARLA framework.   
+The detailed research papers for VCNet and CROCO are available at the following links:  [VCNet](https://link.springer.com/chapter/10.1007/978-3-031-26387-3_27),[CROCO](https://arxiv.org/abs/2304.12943).  
 
-This repository proposed the inclusion of VCNet into the CARLA framework.   
-The paper can be found here [here](https://link.springer.com/chapter/10.1007/978-3-031-26387-3_27).  
-Our method is implemented in the CARLA framework to conduct comparisons with other counterfactual methods.   
+Both method are implemented in the CARLA framework to conduct comparisons with other counterfactual methods.   
 
 CARLA is a python library to benchmark counterfactual explanation and recourse models. It comes out-of-the box with commonly used datasets and various machine learning models. Designed with extensibility in mind: Easily include your own counterfactual methods, new machine learning models or other datasets. Find extensive documentation [here](https://carla-counterfactual-and-recourse-library.readthedocs.io/en/latest/)! The arXiv paper can be found [here](https://arxiv.org/pdf/2108.00783.pdf).
 
@@ -46,6 +46,7 @@ It is planned to make all recourse methods available for all ML frameworks . The
 | Revise                                                     | [Source](https://arxiv.org/pdf/1907.09615.pdf)                   |            |    X    |         |         |
 | Wachter                                                    | [Source](https://arxiv.org/ftp/arxiv/papers/1711/1711.00399.pdf) |            |    X    |         |         |
 | VCNet                                                      | [Source](https://arxiv.org/abs/2212.10847)                       |            |    X    |         |         |
+| CROCO                                                      | [Source](https://arxiv.org/abs/2304.12943)                       |            |    X    |         |         |
 ## Installation
 
 ### Requirements
@@ -53,11 +54,12 @@ It is planned to make all recourse methods available for all ML frameworks . The
 - `python3.7`
 - `pip`
 
-### Install via pip
-
+### Install 
+Run in the root folder (where the setup.py file is):
 ```sh
-pip install carla-recourse
+pip install -e .
 ```
+## VCNet functioning
 
 ### Select a VCNet model 
 Two versions of VCNet can be selected: 
@@ -73,7 +75,7 @@ The hyperparameters values for each dataset are provided in [HYPERPARAMETERS_ori
 
 The models weights are provided in [MODELS_original](carla/self_explaining_model/catalog/vcnet/library/vcnet_tabular_data_v0/save_models) and [MODELS_immutable](carla/self_explaining_model/catalog/vcnet/library/vcnet_tabular_data_v1/save_models) respectively. 
 
-## Run benchmark with VCNet kuplift
+### Run benchmark with VCNet
 
 
 ```python
@@ -140,6 +142,100 @@ results = benchmark.run_benchmark([success_rate,distances,constraint_violation,y
 # Save the results 
 outname = f'results_VCNet.csv'
 outdir = f'./carla_results/vcnet/{data_catalog.name}'
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
+fullname = os.path.join(outdir, outname)
+results.to_csv(fullname)
+```
+## CROCO functioning 
+
+### Run benchmark with CROCO 
+```python
+from carla.data.catalog import OnlineCatalog
+from carla.models.catalog import MLModelCatalog
+from carla.models.negative_instances import predict_negative_instances
+from carla.recourse_methods.catalog.croco import CROCO
+import os 
+from carla import Benchmark
+from carla.evaluation.catalog import Distance, Redundancy, SuccessRate, AvgTime, ConstraintViolation, YNN, Robustness
+
+
+# Load a dataset from the carla framework 
+name = "adult"
+data_catalog = OnlineCatalog(name,encoding_method="OneHot_drop_binary")
+
+## Load and train a machine learning model from the framework 
+model_type = "ann"
+
+
+# Params for neural network model 
+training_params_ann = {
+    "adult": {"lr": 0.002,
+              "epochs": 30,
+              "batch_size": 1024},
+    "compas": {"lr": 0.002,
+               "epochs": 25,
+               "batch_size": 25},
+    "give_me_some_credit": {"lr": 0.002,
+                            "epochs": 50,
+                            "batch_size": 2048},
+    "breast_cancer": {"lr": 0.002,
+               "epochs": 25,
+               "batch_size": 32} }
+
+params = training_params_ann[name]
+model = MLModelCatalog(
+        data_catalog, model_type, load_online=False, backend="pytorch"
+    )
+model.train(
+        learning_rate=params["lr"],
+        epochs=params["epochs"],
+        batch_size=params["batch_size"],
+        hidden_size=[50],
+    )
+model.use_pipeline = False
+
+
+# Select a subsample size: 
+n_cfs = 10
+
+# Sample of test instances that are predicted class 0 
+factuals_drop = predict_negative_instances(model, data_catalog.df_test.drop(columns=[data_catalog.target])).iloc[:n_cfs].reset_index(drop=True)
+
+
+ # Hyperparameters for croco 
+hyperparams_croco = {"n_samples" : 10_000,
+                "binary_cat_features": True,
+                "sigma2": 0.01,
+                "n_iter": 200,
+                "robustness_target" : 0.35,
+                "m" : 0.1,
+                "robustness_epsilon" : 0.01,
+                "lambda_param" : 1,
+                "distribution" : "gaussian"}
+
+# CROCO method 
+croco = CROCO(model,hyperparams_croco)
+
+
+# Benchmark CROCOs 
+benchmark = Benchmark(model,croco,factuals_drop)
+
+# Load metrics from carla 
+distances = Distance(model)
+success_rate = SuccessRate()
+constraint_violation = ConstraintViolation(model)
+ynn = YNN(model,{"y" : 5, "cf_label" : 1})
+# Robustness metric (recourse invalidation rate)
+robustness = Robustness(model,{"n_samples" : 10_000, "sigma2" : 0.01, "distribution" : "gaussian"  })
+
+# Run the benchmark 
+results = benchmark.run_benchmark([success_rate,distances,constraint_violation,robustness,ynn])
+
+
+# Save the results 
+outname = f'results_CROCO.csv'
+outdir = f'./carla_results/croco/{data_catalog.name}'
 if not os.path.exists(outdir):
     os.makedirs(outdir)
 fullname = os.path.join(outdir, outname)
