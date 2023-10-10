@@ -1,7 +1,7 @@
 # VCNet and CROCO - Implementation in the CARLA framework
 
 This repository proposed the inclusion of VCNet: Variational Counter Net, and CROCO: Cost-efficient RObust COunterfactuals into the CARLA framework.   
-The detailed research papers for VCNet and CROCO are available at the following links:  [VCNet](https://link.springer.com/chapter/10.1007/978-3-031-26387-3_27),[CROCO](https://arxiv.org/abs/2304.12943).  
+The detailed research papers for VCNet and CROCO are available at the following links:  [VCNet](https://link.springer.com/chapter/10.1007/978-3-031-26387-3_27), [CROCO](https://arxiv.org/abs/2304.12943).  
 
 Both method are implemented in the CARLA framework to conduct comparisons with other counterfactual methods.   
 
