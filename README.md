@@ -123,7 +123,7 @@ hyperparams = {
 # Instantiate a VCNet model 
 ml_model = VCNet(data_catalog,hyperparams,immutable_features,immutable=False)
 
-# Test instances that are predicted class 0
+# Select a subsample (here the 100 first) of test instances that are predicted class 0
 factuals_drop = predict_negative_instances(ml_model, data_catalog.df_test.drop(columns=[data_catalog.target])).iloc[:100].reset_index(drop=True)
 
 
@@ -196,11 +196,8 @@ model.train(
 model.use_pipeline = False
 
 
-# Select a subsample size: 
-n_cfs = 10
-
-# Sample of test instances that are predicted class 0 
-factuals_drop = predict_negative_instances(model, data_catalog.df_test.drop(columns=[data_catalog.target])).iloc[:n_cfs].reset_index(drop=True)
+# Select a subsample (here the 10 first) of test instances that are predicted class 0
+factuals_drop = predict_negative_instances(ml_model, data_catalog.df_test.drop(columns=[data_catalog.target])).iloc[:10].reset_index(drop=True)
 
 
  # Hyperparameters for croco 
@@ -284,10 +281,11 @@ python -m pytest test/*
 ## Licence
 
 VCNet is under the MIT Licence. See the [LICENCE](github.com/indyfree/carla/blob/master/LICENSE) for more details.
+CROCO is under the MIT Licence. See the [LICENCE](github.com/indyfree/carla/blob/master/LICENSE) for more details.
 
 ## Citation
 
-VCNet came from a paper accepted to ECML/PKDD 2022.
+VCNet came from a paper published to ECML/PKDD 2022.
 If you conduct comparison with it, please cite : 
 ```sh
 @inproceedings{Guyomard2022VCNetAS,
@@ -297,6 +295,17 @@ If you conduct comparison with it, please cite :
   pages={437--453},
   location={Grenoble, Fr},
   year={2022}
+}
+```
+CROCO came from a paper published to ECML/PKDD 2023.
+If you conduct comparison with it, please cite : 
+```sh
+@inproceedings{CROCO,
+  title={Generating robust counterfactual explanations},
+  author={Victor Guyomard and Françoise Fessant and Thomas Guyet},
+  booktitle={Proceedings of the European Conference on Machine Learning and Principles and Practice of Knowledge Discovery in Databases (ECML/PKDD)},
+  location={Turin, Italy},
+  year={2023}
 }
 ```
 The CARLA framwork that is used for implementation, came from a project accepted to NeurIPS 2021 (Benchmark & Data Sets Track).
