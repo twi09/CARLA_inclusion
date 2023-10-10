@@ -35,7 +35,7 @@ class YNN(Evaluation):
         for i, row in counterfactuals.iterrows():
             if np.any(row.isna()):
                 raise ValueError(f"row {i} did not contain a valid counterfactual")
-
+            
             knn = nbrs.kneighbors(
                 row.values.reshape((1, -1)), self.y, return_distance=False
             )[0]
