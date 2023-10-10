@@ -286,7 +286,7 @@ CROCO is under the MIT Licence. See the [LICENCE](github.com/indyfree/carla/blob
 ## Citation
 
 VCNet came from a paper published to ECML/PKDD 2022.
-If you conduct comparison with it, please cite : 
+If you conduct comparison with it, please cite: 
 ```sh
 @inproceedings{Guyomard2022VCNetAS,
   title={{VCNet}: A self-explaining model for realistic counterfactual generation},
@@ -298,7 +298,7 @@ If you conduct comparison with it, please cite :
 }
 ```
 CROCO came from a paper published to ECML/PKDD 2023.
-If you conduct comparison with it, please cite : 
+If you conduct comparison with it, please cite: 
 ```sh
 @inproceedings{CROCO,
   title={Generating robust counterfactual explanations},
